@@ -1,5 +1,5 @@
 ### modeling herds using r programming for different cattle production systems by Renata Henriques
-### contact: renatafhenriques@gmail.com
+### e-mail: renatafhenriques@gmail.com
 ##growth curve parameters
 AA=490    
 k=0.0017
