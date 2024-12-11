@@ -1,0 +1,208 @@
+### modeling herds using r programming for different cattle production systems by Renata Henriques
+### contact: renatafhenriques@gmail.com
+##growth curve parameters
+AA=490    
+k=0.0017
+BW=33
+### carrying capacity
+base_feed=4.6631+0.0030*AA+0.0127*(0.022*MP)  
+AA= AA+dA
+MP=MP+dMP
+ccap= base_feed/(4.6631+0.0030*AA+0.0127*(0.022*MP))
+
+###Direct effects on weaning weight;  
+BASE = 150; WWd = 0;  
+SV = 0.94;     #survival 0-1 year                                                                        
+SV1 = 0.98;    #survival from calf to yrlg, and yrlg to 2yr-old;
+
+#postweaning period for steers
+
+sD1 = 150; sADG1 = 0; #dry season;
+sD2 = 215; sADG2 = 0.430; #rainy season;   
+sD3 = 150; sADG3 = 0; #dry season;
+sD4 = 215; sADG4 = 0.430; #rainy season;
+sD5 = 150; sADG5 = 0; #dry season;
+sD6 = 215; sADG6 = 0.430; #rainy season;   
+sD7 = 150; sADG7 = 0; #dry season;
+sD8 = 215; sADG8 = 0.430; #rainy season;
+
+
+# heifer calves;
+hD1 = 150; hADG1 = 0; 
+hD2 = 215; hADG2 = 0.430;   
+hD3 = 150; hADG3 = 0; 
+hD4 = 215; hADG4 = 0.430; 
+hD5 = 150; hADG5 = 0; 
+hD6 = 215; hADG6 = 0.430;   
+hD7 = 150; hADG7 = 0; 
+hD8 = 215; hADG8 = 0.430; 
+
+
+
+##### carcass - dressing percentage;
+DPh = 0.50; DPs = 0.53;   
+CV_cwt = 0.06; CV_fat = 0.46; mu_fat = 2.5; r_cwtfat = 0.14;
+drea = 0.0;  #deviation from mean EPD;
+DPh = DPh + 0.0029*drea; 
+DPs = DPs + 0.0029*drea; #Based in  USDA cutability formula;
+
+
+#growth curve for cows according to annual periods;   
+WTa = AA - (AA - BW)*exp(-k*365);
+WTb = AA - (AA - BW)*exp(-k*730);
+WTc = AA - (AA - BW)*exp(-k*1095);
+WTd = AA - (AA - BW)*exp(-k*1460);
+WTm = AA - (AA - BW)*exp(-k*1825);
+
+####  Leslie matrix#### 
+
+
+
+SV_1=0.875862
+SV2=0.975; 
+SV3=0.975; SV4=0.975; SV5= 0.8038; SV6= 0.6758; SV7=0.7518; SV8=0.7518;  
+SV9=0.7518; SV10=0.7518; SV11=0.7518; SV12=0.7518; SV13=0.7518; SV14=0.7518;
+FF0 = 0.0; FF1 = 0.0; FF2 = 0.0; FF3=0.0; FF4=0.4; FF5=0.3; FF6=0.3; FF7=0.3; FF8=0.3; FF9=0.3; FF10=0.3; FF11=0.3; FF12=0.3; FF13=0.3; FF14=0.3;
+ 
+A = matrix(c(FF0,FF1,FF2,FF3,FF4,FF5,FF6,FF7,FF8,FF9,FF10,FF11,FF12,FF13,FF14,
+             SV_1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, SV2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, SV3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, SV4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, SV5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, SV6, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, SV7, 0, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, SV8, 0, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, SV9, 0, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 0, SV10, 0, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SV11, 0, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SV12, 0, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SV13, 0, 0,
+             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, SV14, 0), nr=15, byrow=TRUE)
+
+A
+
+
+### Inventory 
+N1 = c(402, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0); 
+N1[1] = 402*ccap;   #adjust initial number to account for relative feed reqt.;
+N2=A
+for (i in 2:500) N2=N2%*%A
+N2 = N2%*%N1;  #e.g., 500 years;sum(N2)   
+N2#total reproduction rate 
+R = 2*A[1,];
+R
+N2
+calves1 = SV*(R*N2); 
+calves1
+cows =as.numeric(c(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,1,1,1,1))%*%N2; 
+cows
+calves = as.numeric(c(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,1,1,1,1))%*%calves1;  #total number of calves produced, by age of dam;
+calves
+
+yrhf=round(c(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0)%*%N2, 1) #yearling replacement heifers;
+yrhf
+y2hf=round(c(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0)%*%N2, 1) 
+y2hf
+y3hf=round(c(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,0,0,0,0)%*%N2, 1) 
+y3hf
+y4hf=round(c(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,0,0,0,0)%*%N2, 1) 
+y4hf
+totalcows=round(c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1,1,1)%*%N2, 1)
+
+
+
+yrst=round(SV1*calves/2, 1); yrst # yearling steers held for harvest;
+y2st=round(SV1*yrst, 1); y2st 
+y3st=round(SV1*y2st, 1); y3st 
+y4st=round(SV1*y3st, 1); y4st 
+
+yrhh=yrst-yrhf; yrhh # yearling heifers held for harvest;
+y2hh=round(SV1*(y2st-yrhf), 1); y2hh 
+y3hh=round(SV1*(y3st-y2hf), 1); y3hh 
+y4hh=round(SV1*(y4st-y3hf), 1); y4hh 
+
+count= cows+calves+yrhf+y2hf+y3hf+y4hf+yrst+yrhh+y2st+y2hh+y3st+y4st+y3hh+y4hh; count
+MU_age = ((c(0, 0, 0, 0, 4, 5, 6, 7, 8, 9, 10, 11, 12,13,14))%*%N2)/cows; MU_age;
+
+
+Nstay=as.numeric(c(0,0,0,0,0,1,1,1,1,1,1,1,1,1,1)%*%N2) 
+stay = round(100*Nstay/cows,2); stay #stayability;
+
+cw_lo = 550; cwp_lo = -30; 
+cw_hi = 950; cwp_hi = -20; 
+cw_vh = 1000; cwp_vh = -20; 
+
+#weaning weight, by sex and age of dam;
+WW = BASE + WWd + WWm;
+age_of_dam = c(0, 0, 0, 0, 0.90, 0.95, 1, 1, 1, 1, 1,1,1,1,1);
+WWt = age_of_dam*WW;WWt
+WWTs = 1.04*(WWt); WWTs 
+WWTh = 0.97*(WWt);WWTh  
+
+WWTs
+
+pc = calves1%*%solve(calves); 
+WTs0 = (WWTs)%*%pc;
+WTh0 = (WWTh)%*%pc;
+
+
+###post-weaning growth;
+WTs1 = WTs0 + sD1*sADG1; 
+WTs2 = WTs1 + sD2*sADG2; 
+WTs3 = WTs2 + sD3*sADG3; 
+WTs4 = WTs3 + sD4*sADG4;
+WTs5 = WTs4 + sD5*sADG5; 
+WTs6 = WTs5 + sD6*sADG6; 
+WTs7 = WTs6 + sD7*sADG7; 
+WTs8 = WTs7 + sD8*sADG8;
+
+WTh1 = WTh0 + hD1*hADG1; 
+WTh2 = WTh1 + hD2*hADG2; 
+WTh3 = WTh2 + hD3*hADG3;
+WTh4 = WTh3 + hD4*hADG4;
+WTh5 = WTh4 + hD5*hADG5; 
+WTh6 = WTh5 + hD6*hADG6; 
+WTh7 = WTh6 + hD7*hADG7; 
+WTh8 = WTh7 + hD8*hADG8;
+
+####################################################################################
+################  COMPUTING ANIMAL UNITS;
+AU_cows = WTc%*%N2[4] + WTd%*%N2[5] + WTm%*%(N2[6]+N2[7]+N2[8]+N2[9]+N2[10]+N2[11]);
+AU_cows = AU_cows/(N2[4]+N2[5]+N2[6]+N2[7]+N2[8]+N2[9]+N2[10]+N2[11]);
+AU_cows = cows%*%AU_cows/450;
+AU_cows
+
+
+AU_hfrs = (yrhf+yrhh)*(((hD1/365)*0.5*(WTh0+WTh1)/450) + ((hD2/365)*0.5*(WTh1+WTh2)/450)) + 
+  (y2hf+y2hh)*(((hD3/365)*0.5*(WTh2+WTh3)/450) + ((hD4/365)*0.5*(WTh3+WTh4)/450))+
+  (y3hf+y3hh)*(((hD5/365)*0.5*(WTh4+WTh5)/450) + ((hD6/365)*0.5*(WTh5+WTh6)/450))+
+  (y4hf+y4hh)*(((hD7/365)*0.5*(WTh6+WTh7)/450) + ((hD4/365)*0.5*(WTh7+WTh8)/450));
+
+
+AU_strs =  yrst*(((sD1/365)*0.5*(WTs0+WTs1)/450) + ((sD2/365)*0.5*(WTs1+WTs2)/450)) + 
+  y2st*(((sD3/365)*0.5*(WTs2+WTs3)/450) + ((sD4/365)*0.5*(WTs3+WTs4)/450))+
+  y3st*(((sD5/365)*0.5*(WTs4+WTs5)/450) + ((sD6/365)*0.5*(WTs5+WTs6)/450))+
+  y4st*(((sD7/365)*0.5*(WTs6+WTs7)/450) + ((sD8/365)*0.5*(WTs7+WTs8)/450));
+
+Anim_units = AU_cows + AU_hfrs + AU_strs; Anim_units
+
+
+### Cull cows for sale
+cull_wt = AA + dA;
+mu_cwt = DPh*cull_wt; sd_cwt = CV_cwt*mu_cwt; sd_fat = CV_fat*mu_fat
+
+V = matrix(rep(0,4),2,2)
+V
+V[1,1] = sd_cwt^2;
+V[1,2] = r_cwtfat*sd_cwt*sd_fat;
+V[2,1] = V[1,2];
+V[2,2] = sd_fat^2;
+T = chol(V) 
+#Chol = the choleski decomposition
+ncull = round(0.5*y4hf, 1); ncull
+
+##### number of animals sold by Correa 2006 
+sold=211 
+replacement_heifers=y4hh+y4hf+y4st+ncull-sold
+harvest_heifers=y4hh+y4hf- replacement_heifers
