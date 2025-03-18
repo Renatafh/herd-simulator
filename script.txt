@@ -55,13 +55,21 @@ WTd = AA - (AA - BW)*exp(-k*1460);
 WTm = AA - (AA - BW)*exp(-k*1825);
 
 ####  Leslie matrix#### 
+#The Leslie matrix was generated using age-specific survival rates (SV) on the diagonal 
+#and age-specific probabilities of producing (FF) female calves on the top row. 
+#The age-specific survival rates were derived from calf survival data, with just the first rate (SV_1)
+#adjusted according to the number of initial cows in the production system by trial and error.
+#The age-specific probabilities of producing female calves correspond to fertility and 
+#the likelihood of producing heifers, and were therefore calculated based on 50% of the total offspring produced,
+# representing the female calves born to the cows. 
 
+#The matrix in this example corresponds to 14 years of production for each cow.
 
 
 SV_1=0.875862
-SV2=0.975; 
-SV3=0.975; SV4=0.975; SV5= 0.8038; SV6= 0.6758; SV7=0.7518; SV8=0.7518;  
-SV9=0.7518; SV10=0.7518; SV11=0.7518; SV12=0.7518; SV13=0.7518; SV14=0.7518;
+SV2=0.99; 
+SV3=0.99; SV4=0.99; SV5= 0.99; SV6= 0.99; SV7=0.99; SV8=0.99;  
+SV9=0.99; SV10=0.99; SV11=0.99; SV12=0.99; SV13=0.99; SV14=0.99;
 FF0 = 0.0; FF1 = 0.0; FF2 = 0.0; FF3=0.0; FF4=0.4; FF5=0.3; FF6=0.3; FF7=0.3; FF8=0.3; FF9=0.3; FF10=0.3; FF11=0.3; FF12=0.3; FF13=0.3; FF14=0.3;
  
 A = matrix(c(FF0,FF1,FF2,FF3,FF4,FF5,FF6,FF7,FF8,FF9,FF10,FF11,FF12,FF13,FF14,
